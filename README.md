@@ -259,3 +259,4 @@ npm run preview      # Preview production build
 
 Copyright 2025 FastFinance Sp. z o.o.
 
+# my-app
