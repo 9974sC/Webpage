@@ -1,0 +1,116 @@
+{
+  "common": {
+    "login": "Zaloguj się",
+    "register": "Zarejestruj się",
+    "logout": "Wyloguj się",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "view": "Podgląd",
+    "back": "Wstecz",
+    "next": "Dalej",
+    "submit": "Wyślij",
+    "loading": "Ładowanie...",
+    "error": "Błąd",
+    "success": "Sukces"
+  },
+  "landing": {
+    "headline": "Bezpieczne finansowanie dopasowane do Ciebie",
+    "cta": "Oblicz swoją ofertę",
+    "howItWorks": "Jak to działa?",
+    "products": "Produkty",
+    "about": "O nas",
+    "contact": "Kontakt"
+  },
+  "auth": {
+    "email": "Adres e-mail",
+    "password": "Hasło",
+    "firstName": "Imię",
+    "lastName": "Nazwisko",
+    "phone": "Telefon",
+    "forgot": "Nie pamiętasz hasła?",
+    "alreadyHaveAccount": "Masz już konto?",
+    "noAccount": "Nie masz konta?",
+    "invalidCredentials": "Nieprawidłowe dane logowania"
+  },
+  "dashboard": {
+    "title": "Panel użytkownika",
+    "welcome": "Witaj",
+    "myLoans": "Moje kredyty",
+    "upcomingPayments": "Nadchodzące płatności",
+    "paymentHistory": "Historia płatności",
+    "documents": "Dokumenty",
+    "support": "Wsparcie"
+  },
+  "loans": {
+    "title": "Kredyty",
+    "apply": "Złóż wniosek",
+    "calculate": "Oblicz ratę",
+    "amount": "Kwota",
+    "interestRate": "Oprocentowanie",
+    "duration": "Okres spłaty (miesiące)",
+    "monthlyPayment": "Miesięczna rata",
+    "totalAmount": "Całkowita kwota",
+    "status": "Status",
+    "pending": "Oczekujący",
+    "active": "Aktywny",
+    "completed": "Zakończony",
+    "rejected": "Odrzucony"
+  },
+  "payments": {
+    "title": "Płatności",
+    "history": "Historia płatności",
+    "upcoming": "Nadchodzące płatności",
+    "payNow": "Zapłać teraz",
+    "amount": "Kwota",
+    "dueDate": "Termin płatności",
+    "status": "Status",
+    "paid": "Opłacone",
+    "upcoming": "Nadchodzące",
+    "overdue": "Przeterminowane",
+    "failed": "Nieudane",
+    "cardToken": "Token karty",
+    "processing": "Przetwarzanie płatności..."
+  },
+  "admin": {
+    "title": "Panel administracyjny",
+    "users": "Użytkownicy",
+    "loans": "Kredyty",
+    "payments": "Płatności",
+    "documents": "Dokumenty",
+    "auditLogs": "Logi audytu",
+    "userDetails": "Szczegóły użytkownika",
+    "updateLoanStatus": "Zaktualizuj status kredytu"
+  },
+  "support": {
+    "title": "Wsparcie",
+    "messages": "Wiadomości",
+    "newMessage": "Nowa wiadomość",
+    "subject": "Temat",
+    "message": "Wiadomość",
+    "send": "Wyślij",
+    "chatbot": "Chatbot",
+    "typeMessage": "Wpisz wiadomość..."
+  },
+  "gdpr": {
+    "consent": "Wyrażam zgodę na przetwarzanie moich danych osobowych zgodnie z RODO.",
+    "info": "Administratorem danych osobowych jest FastFinance Sp. z o.o. Dane osobowe przetwarzane są w celu przedstawienia ofert finansowych, realizacji umów oraz spełnienia obowiązków prawnych. Podanie danych jest dobrowolne, lecz niezbędne do skorzystania z usług. Użytkownik ma prawo dostępu do swoich danych, ich poprawiania, usunięcia oraz ograniczenia przetwarzania zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 (RODO)."
+  },
+  "profile": {
+    "title": "Profil",
+    "personalInfo": "Dane osobowe",
+    "changePassword": "Zmień hasło"
+  },
+  "about": {
+    "title": "O nas",
+    "description": "FastFinance to nowoczesna platforma finansowa dedykowana polskim klientom."
+  },
+  "contact": {
+    "title": "Kontakt",
+    "email": "Email",
+    "phone": "Telefon",
+    "address": "Adres"
+  }
+}
+

@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum LoanStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  REJECTED
+}
+
+enum PaymentStatus {
+  UPCOMING
+  PAID
+  OVERDUE
+  FAILED
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  role        Role     @default(USER)
+  phone       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  loans       Loan[]
+  payments    Payment[]
+  documents   Document[]
+  messages    SupportMessage[]
+
+  @@map("users")
+}
+
+model Loan {
+  id            String     @id @default(uuid())
+  userId        String     @map("user_id")
+  amount        Decimal    @db.Decimal(12, 2)
+  interestRate  Decimal    @map("interest_rate") @db.Decimal(5, 2)
+  durationMonths Int       @map("duration_months")
+  status        LoanStatus @default(PENDING)
+  monthlyPayment Decimal?  @map("monthly_payment") @db.Decimal(12, 2)
+  totalAmount   Decimal?   @map("total_amount") @db.Decimal(12, 2)
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments      Payment[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("loans")
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  loanId        String        @map("loan_id")
+  userId        String        @map("user_id")
+  amount        Decimal       @db.Decimal(12, 2)
+  dueDate       DateTime      @map("due_date") @db.Date
+  paidAt        DateTime?     @map("paid_at")
+  status        PaymentStatus @default(UPCOMING)
+  transactionId String?       @map("transaction_id")
+  createdAt     DateTime      @default(now()) @map("created_at")
+
+  loan          Loan          @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([loanId])
+  @@index([userId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("payments")
+}
+
+model Document {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  url       String   @map("file_url")
+  fileType  String?  @map("file_type")
+  fileSize  Int?     @map("file_size")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("documents")
+}
+
+model SupportMessage {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  subject       String
+  message       String   @db.Text
+  status        String   @default("OPEN")
+  adminResponse String?  @map("admin_response") @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+  respondedAt   DateTime? @map("responded_at")
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("support_messages")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String?  @map("actor_id")
+  actorEmail String? @map("actor_email")
+  targetType String? @map("target_type")
+  targetId   String? @map("target_id")
+  details    Json?
+  ipAddress  String? @map("ip_address")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([actorId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+

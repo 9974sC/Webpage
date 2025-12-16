@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #F2F6D0;
+  --color-foreground: #080708;
+  --color-primary: #473BF0;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #A0DDFF;
+  --color-secondary-foreground: #080708;
+  --color-muted: #E8ECBE;
+  --color-muted-foreground: #5A5958;
+  --color-accent: #A0DDFF;
+  --color-accent-foreground: #080708;
+  --color-destructive: #DC2626;
+  --color-destructive-foreground: #FFFFFF;
+  --color-border: #D4D8AA;
+  --color-input: #FFFFFF;
+  --color-ring: #473BF0;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #080708;
+  --radius-lg: 0.625rem;
+  --radius-md: calc(0.625rem - 2px);
+  --radius-sm: calc(0.625rem - 4px);
+  --font-size-base: 18px;
+  --line-height-base: 1.6;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+  button {
+    min-height: 48px;
+  }
+  input, textarea, select {
+    min-height: 48px;
+  }
+}
+
+@layer utilities {
+  .transition-calm {
+    transition-duration: 250ms;
+    transition-timing-function: ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+

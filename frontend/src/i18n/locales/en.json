@@ -1,0 +1,116 @@
+{
+  "common": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "landing": {
+    "headline": "Secure financing tailored to your needs",
+    "cta": "Calculate your offer",
+    "howItWorks": "How it works?",
+    "products": "Products",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "auth": {
+    "email": "Email address",
+    "password": "Password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "phone": "Phone",
+    "forgot": "Forgot your password?",
+    "alreadyHaveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "invalidCredentials": "Invalid credentials"
+  },
+  "dashboard": {
+    "title": "User Dashboard",
+    "welcome": "Welcome",
+    "myLoans": "My Loans",
+    "upcomingPayments": "Upcoming Payments",
+    "paymentHistory": "Payment History",
+    "documents": "Documents",
+    "support": "Support"
+  },
+  "loans": {
+    "title": "Loans",
+    "apply": "Apply for Loan",
+    "calculate": "Calculate Payment",
+    "amount": "Amount",
+    "interestRate": "Interest Rate",
+    "duration": "Duration (months)",
+    "monthlyPayment": "Monthly Payment",
+    "totalAmount": "Total Amount",
+    "status": "Status",
+    "pending": "Pending",
+    "active": "Active",
+    "completed": "Completed",
+    "rejected": "Rejected"
+  },
+  "payments": {
+    "title": "Payments",
+    "history": "Payment History",
+    "upcoming": "Upcoming Payments",
+    "payNow": "Pay now",
+    "amount": "Amount",
+    "dueDate": "Due Date",
+    "status": "Status",
+    "paid": "Paid",
+    "upcoming": "Upcoming",
+    "overdue": "Overdue",
+    "failed": "Failed",
+    "cardToken": "Card Token",
+    "processing": "Processing payment..."
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "users": "Users",
+    "loans": "Loans",
+    "payments": "Payments",
+    "documents": "Documents",
+    "auditLogs": "Audit Logs",
+    "userDetails": "User Details",
+    "updateLoanStatus": "Update Loan Status"
+  },
+  "support": {
+    "title": "Support",
+    "messages": "Messages",
+    "newMessage": "New Message",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send",
+    "chatbot": "Chatbot",
+    "typeMessage": "Type a message..."
+  },
+  "gdpr": {
+    "consent": "I consent to the processing of my personal data in accordance with GDPR.",
+    "info": "The administrator of personal data is FastFinance Sp. z o.o. Personal data is processed for the purpose of presenting financial offers, contract execution and fulfillment of legal obligations. Providing data is voluntary but necessary to use the services. The user has the right to access, correct, delete and limit the processing of their data in accordance with Regulation (EU) 2016/679 (GDPR)."
+  },
+  "profile": {
+    "title": "Profile",
+    "personalInfo": "Personal Information",
+    "changePassword": "Change Password"
+  },
+  "about": {
+    "title": "About Us",
+    "description": "FastFinance is a modern financial platform dedicated to Polish customers."
+  },
+  "contact": {
+    "title": "Contact",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address"
+  }
+}
+
