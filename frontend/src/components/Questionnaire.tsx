@@ -30,6 +30,7 @@ interface QuestionnaireData {
 interface QuestionnaireProps {
   onComplete: (data: QuestionnaireData) => void
   onProceed?: (data: QuestionnaireData) => void
+  initialData?: QuestionnaireData
 }
 
 const helpfulHints = {
@@ -65,13 +66,13 @@ const helpfulHints = {
   }
 }
 
-export default function Questionnaire({ onComplete, onProceed }: QuestionnaireProps) {
-  const [started, setStarted] = useState(false)
-  const [step, setStep] = useState(1)
+export default function Questionnaire({ onComplete, onProceed, initialData }: QuestionnaireProps) {
+  const [started, setStarted] = useState(!!initialData)
+  const [step, setStep] = useState(initialData ? 3 : 1)
   const [loading, setLoading] = useState(false)
   const [completed, setCompleted] = useState(false)
-  const [gdprConsent, setGdprConsent] = useState(false)
-  const [data, setData] = useState<QuestionnaireData>({
+  const [gdprConsent, setGdprConsent] = useState(!!initialData)
+  const [data, setData] = useState<QuestionnaireData>(initialData || {
     firstName: "",
     lastName: "",
     age: "",

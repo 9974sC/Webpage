@@ -48,6 +48,11 @@ export default function Products() {
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [showApplicationForm, setShowApplicationForm] = useState(false)
   const [applicationComplete, setApplicationComplete] = useState(false)
+  const [currentCalculation, setCurrentCalculation] = useState<{
+    monthlyPayment: number
+    totalAmount: number
+    totalInterest: number
+  } | null>(null)
 
   const fetchQuotes = async () => {
     try {
@@ -279,8 +284,11 @@ export default function Products() {
       </div>
 
       {!questionnaireComplete ? (
-        <div className="transition-all duration-500">
-          <Questionnaire onComplete={handleQuestionnaireComplete} />
+        <div id="questionnaire-section" className="transition-all duration-500">
+          <Questionnaire 
+            onComplete={handleQuestionnaireComplete}
+            initialData={questionnaireData || undefined}
+          />
         </div>
       ) : (
         <div
@@ -295,26 +303,24 @@ export default function Products() {
               Na podstawie Twoich danych, oto spersonalizowany kalkulator
             </p>
           </div>
-          <LoanCalculator questionnaireData={questionnaireData || undefined} />
-          
-          {/* Button to proceed to application form */}
-          <div className="mt-8 text-center">
-            <Button
-              onClick={() => {
-                if (questionnaireData) {
-                  setShowApplicationForm(true)
-                  setTimeout(() => {
-                    document.getElementById("application-section")?.scrollIntoView({ behavior: "smooth" })
-                  }, 300)
-                }
-              }}
-              size="lg"
-              className="h-14 px-10 text-lg"
-            >
-              Wybierz kredyt i przejdź do wniosku
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
+          <LoanCalculator 
+            questionnaireData={questionnaireData || undefined}
+            onCalculationChange={setCurrentCalculation}
+            onBack={() => {
+              setQuestionnaireComplete(false)
+              setTimeout(() => {
+                document.getElementById("questionnaire-section")?.scrollIntoView({ behavior: "smooth" })
+              }, 100)
+            }}
+            onProceedToApplication={() => {
+              if (questionnaireData) {
+                setShowApplicationForm(true)
+                setTimeout(() => {
+                  document.getElementById("application-section")?.scrollIntoView({ behavior: "smooth" })
+                }, 300)
+              }
+            }}
+          />
         </div>
       )}
 
