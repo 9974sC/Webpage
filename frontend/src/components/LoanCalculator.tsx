@@ -197,24 +197,29 @@ function calculateCumulativeInterestOverTime(
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     const data = payload[0]
-    const interestDue = (data.payload as any)?.interestDue as number | undefined
+    const dataKey = data.dataKey as string
+    const isInterestLine = dataKey === "interestDue"
+    const payloadData = data.payload as any
+    const interestDue = payloadData?.interestDue as number | undefined
     
     return (
       <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
         <p className="font-semibold mb-2">{`Miesiąc ${label}`}</p>
         <div className="space-y-1">
-          <div>
-            <span className="font-semibold">Pozostała kwota: </span>
-            {(data.value as number).toLocaleString("pl-PL", {
-              style: "currency",
-              currency: "PLN",
-              maximumFractionDigits: 0,
-            })}
-          </div>
-          {interestDue !== undefined && interestDue > 0 && (
+          {!isInterestLine && (
+            <div>
+              <span className="font-semibold">Pozostała kwota: </span>
+              {(data.value as number).toLocaleString("pl-PL", {
+                style: "currency",
+                currency: "PLN",
+                maximumFractionDigits: 0,
+              })}
+            </div>
+          )}
+          {(isInterestLine || (interestDue !== undefined && interestDue > 0)) && (
             <div>
               <span className="font-semibold">Odsetki do zapłaty: </span>
-              {interestDue.toLocaleString("pl-PL", {
+              {(isInterestLine ? data.value : interestDue).toLocaleString("pl-PL", {
                 style: "currency",
                 currency: "PLN",
                 maximumFractionDigits: 0,
@@ -231,25 +236,33 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
 const CustomInterestTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     const data = payload[0]
-    const totalPaid = (data.payload as any)?.totalPaid as number | undefined
-    const interestDue = data.value as number
+    const dataKey = data.dataKey as string
+    const isTotalLine = dataKey === "totalPaid"
+    const payloadData = data.payload as any
+    const totalPaid = payloadData?.totalPaid as number | undefined
+    const interestDue = isTotalLine ? undefined : data.value as number
+    
+    const totalLine = payload.find((p: any) => p.dataKey === "totalPaid")
+    const totalAmount = totalLine?.value as number | undefined
     
     return (
       <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
         <p className="font-semibold mb-2">{`Miesiąc ${label}`}</p>
         <div className="space-y-1">
-          <div>
-            <span className="font-semibold">Odsetki do zapłaty: </span>
-            {interestDue.toLocaleString("pl-PL", {
-              style: "currency",
-              currency: "PLN",
-              maximumFractionDigits: 0,
-            })}
-          </div>
-          {totalPaid !== undefined && totalPaid > 0 && (
+          {!isTotalLine && interestDue !== undefined && (
+            <div>
+              <span className="font-semibold">Odsetki do zapłaty: </span>
+              {interestDue.toLocaleString("pl-PL", {
+                style: "currency",
+                currency: "PLN",
+                maximumFractionDigits: 0,
+              })}
+            </div>
+          )}
+          {(totalAmount || totalPaid) && (
             <div>
               <span className="font-semibold">Całkowita spłata: </span>
-              {totalPaid.toLocaleString("pl-PL", {
+              {(totalAmount || totalPaid)!.toLocaleString("pl-PL", {
                 style: "currency",
                 currency: "PLN",
                 maximumFractionDigits: 0,
@@ -527,7 +540,6 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
                           tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
                         />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend />
                         <Line
                           type="monotone"
                           dataKey="balance"
@@ -570,7 +582,7 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
                           stroke="#6b7280"
                         />
                         <YAxis
-                          label={{ value: "Odsetki (PLN)", angle: -90, position: "insideLeft" }}
+                          label={{ value: "Kwota (PLN)", angle: -90, position: "insideLeft" }}
                           stroke="#6b7280"
                           tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
                         />
@@ -582,6 +594,17 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
                           strokeWidth={2}
                           dot={false}
                           activeDot={{ r: 4 }}
+                          name="Odsetki do zapłaty"
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="totalPaid"
+                          stroke="#8B4513"
+                          strokeWidth={2}
+                          strokeDasharray="5 5"
+                          dot={false}
+                          activeDot={{ r: 4 }}
+                          hide={true}
                         />
                       </LineChart>
                     </ResponsiveContainer>
