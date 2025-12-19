@@ -53,7 +53,7 @@ export default function Login() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-3xl">{t("common.login")}</CardTitle>
-          <CardDescription>Zaloguj się do swojego konta FastFinance</CardDescription>
+          <CardDescription>Zaloguj się do swojego konta Ascendia</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

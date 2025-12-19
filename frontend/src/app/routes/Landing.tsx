@@ -1,48 +1,275 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Check, Shield, Clock, FileText, Users, TrendingUp } from "lucide-react"
+import { Check, Shield, Clock, FileText, Users, TrendingUp, Calculator, AlertCircle, ArrowRight } from "lucide-react"
+import SimpleCalculator from "@/components/SimpleCalculator"
+import BankPartners from "@/components/BankPartners"
+import { Checkbox } from "@/components/ui/checkbox"
+
+function useScrollAnimation() {
+  const [isVisible, setIsVisible] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (ref.current) {
+      observer.observe(ref.current)
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current)
+      }
+    }
+  }, [])
+
+  return { ref, isVisible }
+}
 
 export default function Landing() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [gdprConsent, setGdprConsent] = useState(false)
+  const heroSectionRef = useScrollAnimation()
+  const calculatorRef = useScrollAnimation()
+  const trustRef = useScrollAnimation()
+  const featuresRef = useScrollAnimation()
+  const productsRef = useScrollAnimation()
+
+  const handleStartCalculation = () => {
+    if (!gdprConsent) {
+      alert(t("landing.personalizedCalculator.gdprConsent") ? "Musisz wyrazić zgodę na przetwarzanie danych osobowych" : "You must consent to personal data processing")
+      return
+    }
+    navigate("/products")
+  }
 
   return (
     <div>
-      {/* Hero Section */}
-      <section className="container mx-auto px-6 py-20 md:py-32">
-        <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-primary/20 bg-primary/5 px-4 py-2">
-            <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-sm font-medium text-foreground">
-              Zaufanie ponad 50 000 Polaków
-            </span>
+      {/* Personalized Calculator Homepage Section */}
+      <section 
+        className="py-12 md:py-20 relative"
+        style={{
+          backgroundImage: 'url(/assets/hero-field.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+          <div className="absolute inset-0 bg-background/70"></div>
+          <div className="container mx-auto px-6 max-w-6xl relative z-10">
+            {/* Title and Subtitle */}
+            <div className="text-center mb-12">
+              <h1 className="mb-4 text-balance text-4xl font-extrabold leading-tight text-foreground md:text-5xl lg:text-6xl">
+                {t("landing.personalizedCalculator.title")}
+              </h1>
+              <p className="text-balance text-lg text-foreground md:text-xl">
+                {t("landing.personalizedCalculator.subtitle")}
+              </p>
+            </div>
+
+            {/* Two Information Cards */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* Duration Card */}
+              <Card className="border-2" style={{ backgroundColor: "#FBF9F4" }}>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+                      <Clock className="h-5 w-5 text-primary-foreground" />
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground">
+                      {t("landing.personalizedCalculator.duration.title")}
+                    </h3>
+                  </div>
+                  <p className="text-foreground leading-relaxed">
+                    {t("landing.personalizedCalculator.duration.content")
+                      .split("**")
+                      .map((part, index) => 
+                        index % 2 === 1 ? (
+                          <strong key={index} className="text-foreground">{part}</strong>
+                        ) : (
+                          <span key={index}>{part}</span>
+                        )
+                      )}
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Documents Card */}
+              <Card className="border-2" style={{ backgroundColor: "#FBF9F4" }}>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+                      <FileText className="h-5 w-5 text-primary-foreground" />
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground">
+                      {t("landing.personalizedCalculator.documents.title")}
+                    </h3>
+                  </div>
+                  <p className="text-foreground leading-relaxed mb-3">
+                    {t("landing.personalizedCalculator.documents.intro")}
+                  </p>
+                  <ul className="space-y-2 text-sm text-foreground">
+                    <li className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>{t("landing.personalizedCalculator.documents.identity")}</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>{t("landing.personalizedCalculator.documents.income")}</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span>{t("landing.personalizedCalculator.documents.address")}</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Main Calculator Card */}
+            <Card className="border-2 mb-8" style={{ backgroundColor: "#FBF9F4" }}>
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+                    <Calculator className="h-5 w-5 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground">
+                      {t("landing.personalizedCalculator.calculator.title")}
+                    </h2>
+                    <p className="text-sm text-foreground mt-1">
+                      {t("landing.personalizedCalculator.calculator.subtitle")}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <h3 className="text-xl font-bold text-foreground mb-3">
+                    {t("landing.personalizedCalculator.calculator.whatIs.title")}
+                  </h3>
+                  <p className="text-foreground leading-relaxed mb-4">
+                    {t("landing.personalizedCalculator.calculator.whatIs.paragraph1")}
+                  </p>
+                  <p className="text-foreground leading-relaxed">
+                    <strong className="text-foreground">
+                      {t("landing.personalizedCalculator.calculator.whatIs.paragraph2.title")}
+                    </strong>{" "}
+                    {t("landing.personalizedCalculator.calculator.whatIs.paragraph2.content")}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Important Information Card */}
+            <Card className="border-2 mb-8" style={{ backgroundColor: "#FBF9F4" }}>
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
+                    <AlertCircle className="h-5 w-5 text-primary-foreground" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-foreground">
+                    {t("landing.personalizedCalculator.importantInfo.title")}
+                  </h2>
+                </div>
+
+                <div className="space-y-4 mt-6">
+                  <div>
+                    <h4 className="font-bold text-foreground mb-2 flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-primary" />
+                      {t("landing.personalizedCalculator.importantInfo.duration.title")}
+                    </h4>
+                    <p className="text-foreground leading-relaxed">
+                      {t("landing.personalizedCalculator.importantInfo.duration.content")}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-foreground mb-2 flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-primary" />
+                      {t("landing.personalizedCalculator.importantInfo.documents.title")}
+                    </h4>
+                    <p className="text-foreground leading-relaxed">
+                      {t("landing.personalizedCalculator.importantInfo.documents.content")}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-foreground mb-2 flex items-center gap-2">
+                      <Shield className="h-4 w-4 text-primary" />
+                      {t("landing.personalizedCalculator.importantInfo.security.title")}
+                    </h4>
+                    <p className="text-foreground leading-relaxed">
+                      {t("landing.personalizedCalculator.importantInfo.security.content")}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* GDPR Consent and CTA */}
+            <div className="max-w-3xl mx-auto">
+              <div className="mb-6">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <Checkbox
+                    checked={gdprConsent}
+                    onCheckedChange={(checked) => setGdprConsent(checked === true)}
+                    className="mt-1 flex-shrink-0"
+                  />
+                  <span className="text-sm text-foreground leading-relaxed">
+                    {t("landing.personalizedCalculator.gdprConsent")}
+                  </span>
+                </label>
+              </div>
+
+              <div className="text-center">
+                <Button
+                  size="lg"
+                  onClick={handleStartCalculation}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 h-14 px-10 text-lg"
+                >
+                  {t("landing.personalizedCalculator.startCalculation")}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
+            </div>
           </div>
+        </section>
 
-          <h1 className="mb-6 text-balance text-5xl font-bold leading-tight text-foreground md:text-6xl lg:text-7xl">
-            {t("landing.headline")}
-          </h1>
-
-          <p className="mb-10 text-balance text-xl leading-relaxed text-muted-foreground md:text-2xl">
-            Przejrzyste warunki, proste procesy i pełne wsparcie na każdym etapie. Sprawdź swoją ofertę w 3 minuty bez
-            wpływu na scoring kredytowy.
-          </p>
-
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Link to="/register">
-              <Button size="lg">{t("landing.cta")}</Button>
-            </Link>
-            <Link to="#jak-to-dziala">
-              <Button variant="outline" size="lg">
-                {t("landing.howItWorks")}
-              </Button>
-            </Link>
+      {/* Simple Calculator Section */}
+      <section className="bg-card py-16 border-y-2 border-border">
+        <div className="container mx-auto px-6">
+          <div className="mb-8 text-center">
+            <h2 className="mb-4 text-balance text-3xl font-extrabold text-foreground md:text-4xl">
+              Szybki kalkulator
+            </h2>
+            <p className="text-balance text-lg text-muted-foreground">
+              Oblicz ratę kredytu bez logowania - wystarczy podać kwotę, oprocentowanie i okres spłaty
+            </p>
           </div>
+          <SimpleCalculator />
         </div>
       </section>
 
       {/* Trust Indicators */}
-      <section className="border-y-2 border-border bg-card">
+      <section
+        ref={trustRef.ref}
+        className={`border-y-2 border-border bg-card transition-all duration-1000 ${
+          trustRef.isVisible
+            ? "translate-y-0 opacity-100"
+            : "translate-y-8 opacity-0"
+        }`}
+      >
         <div className="container mx-auto px-6 py-12">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:gap-12">
             <div className="text-center">
@@ -62,9 +289,17 @@ export default function Landing() {
       </section>
 
       {/* Features Section */}
-      <section className="container mx-auto px-6 py-20 md:py-32" id="jak-to-dziala">
+      <section
+        ref={featuresRef.ref}
+        className={`container mx-auto px-6 py-20 md:py-32 transition-all duration-1000 ${
+          featuresRef.isVisible
+            ? "translate-y-0 opacity-100"
+            : "translate-y-8 opacity-0"
+        }`}
+        id="jak-to-dziala"
+      >
         <div className="mb-16 text-center">
-          <h2 className="mb-4 text-balance text-4xl font-bold text-foreground md:text-5xl">
+          <h2 className="mb-4 text-balance text-4xl font-extrabold text-foreground md:text-5xl">
             Proste kroki do Twojego kredytu
           </h2>
           <p className="text-balance text-lg text-muted-foreground md:text-xl">
@@ -78,7 +313,7 @@ export default function Landing() {
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
                 <FileText className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="mb-3 text-2xl font-bold text-foreground">1. Wypełnij wniosek</h3>
+              <h3 className="mb-3 text-2xl font-extrabold text-foreground">1. Wypełnij wniosek</h3>
               <p className="leading-relaxed text-muted-foreground text-base">
                 Prosty formularz online zajmie Ci zaledwie 3 minuty. Bez wizyty w oddziale, wszystko z domu.
               </p>
@@ -90,7 +325,7 @@ export default function Landing() {
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
                 <Clock className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="mb-3 text-2xl font-bold text-foreground">2. Otrzymaj ofertę</h3>
+              <h3 className="mb-3 text-2xl font-extrabold text-foreground">2. Otrzymaj ofertę</h3>
               <p className="leading-relaxed text-muted-foreground text-base">
                 Nasza decyzja kredytowa to zazwyczaj tylko kilka godzin. Sprawdzimy Twoją zdolność kredytową i
                 przedstawimy najlepszą ofertę.
@@ -103,7 +338,7 @@ export default function Landing() {
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
                 <Check className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="mb-3 text-2xl font-bold text-foreground">3. Otrzymaj środki</h3>
+              <h3 className="mb-3 text-2xl font-extrabold text-foreground">3. Otrzymaj środki</h3>
               <p className="leading-relaxed text-muted-foreground text-base">
                 Po podpisaniu umowy online, pieniądze wpłyną na Twoje konto w ciągu 24 godzin.
               </p>
@@ -113,10 +348,18 @@ export default function Landing() {
       </section>
 
       {/* Products Section */}
-      <section className="bg-card py-20 md:py-32" id="produkty">
+      <section
+        ref={productsRef.ref}
+        className={`bg-card py-20 md:py-32 transition-all duration-1000 ${
+          productsRef.isVisible
+            ? "translate-y-0 opacity-100"
+            : "translate-y-8 opacity-0"
+        }`}
+        id="produkty"
+      >
         <div className="container mx-auto px-6">
           <div className="mb-16 text-center">
-            <h2 className="mb-4 text-balance text-4xl font-bold text-foreground md:text-5xl">
+            <h2 className="mb-4 text-balance text-4xl font-extrabold text-foreground md:text-5xl">
               Nasze produkty finansowe
             </h2>
             <p className="text-balance text-lg text-muted-foreground md:text-xl">
@@ -130,7 +373,7 @@ export default function Landing() {
                 <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
                   <TrendingUp className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="mb-4 text-3xl font-bold text-foreground">Kredyt gotówkowy</h3>
+                <h3 className="mb-4 text-3xl font-extrabold text-foreground">Kredyt gotówkowy</h3>
                 <p className="mb-6 text-lg leading-relaxed text-muted-foreground">
                   Od 5 000 zł do 200 000 zł na dowolny cel. Niskie oprocentowanie, elastyczne raty dopasowane do Twoich
                   możliwości.
@@ -149,7 +392,7 @@ export default function Landing() {
                     <span className="text-base text-foreground">Możliwość wcześniejszej spłaty bez prowizji</span>
                   </li>
                 </ul>
-                <Link to="/register">
+                <Link to="/payments">
                   <Button size="lg" className="w-full text-base h-12">
                     Sprawdź ofertę
                   </Button>
@@ -162,7 +405,7 @@ export default function Landing() {
                 <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
                   <Shield className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="mb-4 text-3xl font-bold text-foreground">Kredyt konsolidacyjny</h3>
+                <h3 className="mb-4 text-3xl font-extrabold text-foreground">Kredyt konsolidacyjny</h3>
                 <p className="mb-6 text-lg leading-relaxed text-muted-foreground">
                   Połącz wszystkie swoje zobowiązania w jedną, niższą ratę. Uprość swoje finanse i zaoszczędź nawet 30%.
                 </p>
@@ -180,7 +423,7 @@ export default function Landing() {
                     <span className="text-base text-foreground">Możliwość dodatkowej gotówki</span>
                   </li>
                 </ul>
-                <Link to="/register">
+                <Link to="/payments">
                   <Button size="lg" variant="outline" className="w-full text-base h-12 bg-transparent">
                     Sprawdź ofertę
                   </Button>
@@ -191,10 +434,13 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Bank Partners Section */}
+      <BankPartners />
+
       {/* CTA Section */}
       <section className="bg-primary py-20">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="mb-6 text-balance text-4xl font-bold text-primary-foreground md:text-5xl">
+          <h2 className="mb-6 text-balance text-4xl font-extrabold text-primary-foreground md:text-5xl">
             Gotowy na lepsze finanse?
           </h2>
           <p className="mb-10 text-balance text-xl text-primary-foreground/90 md:text-2xl">
@@ -215,9 +461,9 @@ export default function Landing() {
             <div>
               <div className="mb-4 flex items-center gap-2">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                  <span className="text-xl font-bold text-primary-foreground">FF</span>
+                  <span className="text-xl font-bold text-primary-foreground">A</span>
                 </div>
-                <span className="text-xl font-bold text-foreground">FastFinance</span>
+                <span className="text-xl font-bold text-foreground">Ascendia</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 Bezpieczne finansowanie dopasowane do Twoich potrzeb.
@@ -253,6 +499,11 @@ export default function Landing() {
                     {t("landing.contact")}
                   </Link>
                 </li>
+                <li>
+                  <Link to="/support" className="hover:text-primary transition-calm">
+                    Wsparcie
+                  </Link>
+                </li>
               </ul>
             </div>
 
@@ -264,12 +515,17 @@ export default function Landing() {
                     RODO
                   </Link>
                 </li>
+                <li>
+                  <Link to="/education" className="hover:text-primary transition-calm">
+                    Edukacja
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
 
           <div className="mt-12 border-t-2 border-border pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2025 FastFinance Sp. z o.o. Wszystkie prawa zastrzeżone.</p>
+            <p>&copy; 2025 Ascendia Sp. z o.o. Wszystkie prawa zastrzeżone.</p>
           </div>
         </div>
       </footer>

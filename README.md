@@ -1,4 +1,4 @@
-# FastFinance - Production-Ready Financial Platform
+# Ascendia - Production-Ready Financial Platform
 
 Production-ready financial platform for the Polish market with React frontend, Node.js backend, PostgreSQL database, and full authentication system.
 
@@ -68,7 +68,7 @@ npm install
 Create a `.env` file in the `backend` directory:
 
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/fastfinance?schema=public"
+DATABASE_URL="postgresql://user:password@localhost:5432/ascendia?schema=public"
 SESSION_SECRET="your-super-secret-session-key-change-in-production"
 PORT=3001
 NODE_ENV=development
@@ -117,7 +117,7 @@ The frontend will run on `http://localhost:3000`
 ## Demo Accounts
 
 ### Admin Account
-- **Email**: `admin@fastfinance.pl`
+- **Email**: `admin@ascendia.pl`
 - **Password**: `Admin#1234`
 
 ### User Accounts
@@ -257,6 +257,6 @@ npm run preview      # Preview production build
 
 ## License
 
-Copyright 2025 FastFinance Sp. z o.o.
+Copyright 2025 Ascendia Sp. z o.o.
 
 # my-app

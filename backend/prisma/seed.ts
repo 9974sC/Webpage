@@ -16,23 +16,39 @@ async function main() {
   console.log("Starting seed...")
 
   // Hash passwords
-  const passwordAdmin = await bcrypt.hash("Admin#1234", 12)
+  const passwordAdmin = await bcrypt.hash("admin", 12)
   const passwordUser = await bcrypt.hash("User#1234", 12)
 
-  // Create admin user
+  // Create test admin user (admin@admin.com/admin)
   const admin = await prisma.user.upsert({
-    where: { email: "admin@fastfinance.pl" },
+    where: { email: "admin@admin.com" },
     update: {},
     create: {
-      email: "admin@fastfinance.pl",
+      email: "admin@admin.com",
       password: passwordAdmin,
       firstName: "Admin",
-      lastName: "FastFinance",
+      lastName: "User",
       role: Role.ADMIN,
     },
   })
 
   console.log("Created admin:", admin.email)
+
+  // Also create the original admin account for backward compatibility
+  const passwordAdminOriginal = await bcrypt.hash("Admin#1234", 12)
+  const adminOriginal = await prisma.user.upsert({
+    where: { email: "admin@ascendia.pl" },
+    update: {},
+    create: {
+      email: "admin@ascendia.pl",
+      password: passwordAdminOriginal,
+      firstName: "Admin",
+      lastName: "Ascendia",
+      role: Role.ADMIN,
+    },
+  })
+
+  console.log("Created admin (original):", adminOriginal.email)
 
   // Create demo users
   const jan = await prisma.user.upsert({

@@ -1,5 +1,4 @@
 import express from "express"
-import { prisma } from "../lib/prisma"
 import { authenticate, AuthRequest } from "../middleware/auth"
 
 const router = express.Router()
@@ -21,29 +20,32 @@ async function processPayment(
   }
 }
 
-// Get upcoming payments
+// Generate fake upcoming payments
+function generateFakeUpcomingPayments() {
+  const amounts = [750, 1000, 1250, 1500, 2000]
+  
+  return Array.from({ length: 5 }, (_, i) => {
+    const amount = amounts[Math.floor(Math.random() * amounts.length)]
+    const dueDate = new Date(Date.now() + (i + 1) * 30 * 24 * 60 * 60 * 1000)
+    
+    return {
+      id: `payment-${i + 1}`,
+      amount,
+      dueDate: dueDate.toISOString(),
+      status: "UPCOMING",
+      loan: {
+        id: `loan-${Math.floor(i / 3) + 1}`,
+        amount: amount * 12,
+        interestRate: 4.5,
+      },
+    }
+  })
+}
+
+// Get upcoming payments - Proof of concept: return fake data
 router.get("/upcoming", authenticate, async (req: AuthRequest, res) => {
   try {
-    const payments = await prisma.payment.findMany({
-      where: {
-        userId: req.user!.id,
-        status: "UPCOMING",
-        dueDate: {
-          gte: new Date(),
-        },
-      },
-      include: {
-        loan: {
-          select: {
-            id: true,
-            amount: true,
-            interestRate: true,
-          },
-        },
-      },
-      orderBy: { dueDate: "asc" },
-    })
-
+    const payments = generateFakeUpcomingPayments()
     res.json({ payments })
   } catch (error) {
     console.error("Get upcoming payments error:", error)
@@ -51,26 +53,33 @@ router.get("/upcoming", authenticate, async (req: AuthRequest, res) => {
   }
 })
 
-// Get payment history
+// Generate fake payment history
+function generateFakePaymentHistory() {
+  const amounts = [750, 1000, 1250, 1500]
+  
+  return Array.from({ length: 10 }, (_, i) => {
+    const amount = amounts[Math.floor(Math.random() * amounts.length)]
+    const paidAt = new Date(Date.now() - (i + 1) * 30 * 24 * 60 * 60 * 1000)
+    
+    return {
+      id: `payment-hist-${i + 1}`,
+      amount,
+      dueDate: new Date(paidAt.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      status: "PAID",
+      paidAt: paidAt.toISOString(),
+      transactionId: `txn_${Math.random().toString(36).substring(2, 15)}`,
+      loan: {
+        id: `loan-${Math.floor(i / 3) + 1}`,
+        amount: amount * 12,
+      },
+    }
+  })
+}
+
+// Get payment history - Proof of concept: return fake data
 router.get("/history", authenticate, async (req: AuthRequest, res) => {
   try {
-    const payments = await prisma.payment.findMany({
-      where: {
-        userId: req.user!.id,
-        status: "PAID",
-      },
-      include: {
-        loan: {
-          select: {
-            id: true,
-            amount: true,
-          },
-        },
-      },
-      orderBy: { paidAt: "desc" },
-      take: 50,
-    })
-
+    const payments = generateFakePaymentHistory()
     res.json({ payments })
   } catch (error) {
     console.error("Get payment history error:", error)
@@ -78,7 +87,7 @@ router.get("/history", authenticate, async (req: AuthRequest, res) => {
   }
 })
 
-// Process payment
+// Process payment - Proof of concept: return fake processed payment
 router.post("/:id/pay", authenticate, async (req: AuthRequest, res) => {
   try {
     const paymentId = req.params.id
@@ -88,45 +97,19 @@ router.post("/:id/pay", authenticate, async (req: AuthRequest, res) => {
       return res.status(400).json({ error: "Card token required" })
     }
 
-    const payment = await prisma.payment.findFirst({
-      where: {
-        id: paymentId,
-        userId: req.user!.id,
-        status: "UPCOMING",
-      },
-    })
-
-    if (!payment) {
-      return res.status(404).json({ error: "Payment not found" })
-    }
-
     // Process payment (mocked)
-    const result = await processPayment(Number(payment.amount), cardToken)
+    const result = await processPayment(1000, cardToken)
 
-    // Update payment
-    const updatedPayment = await prisma.payment.update({
-      where: { id: paymentId },
-      data: {
-        status: "PAID",
-        paidAt: new Date(),
-        transactionId: result.transactionId,
-      },
-    })
-
-    // Audit log
-    await prisma.auditLog.create({
-      data: {
-        action: "PAYMENT_PROCESSED",
-        actorId: req.user!.id,
-        actorEmail: req.user!.email,
-        targetType: "Payment",
-        targetId: paymentId,
-        details: {
-          amount: Number(payment.amount),
-          transactionId: result.transactionId,
-        },
-      },
-    })
+    // Return fake updated payment
+    const updatedPayment = {
+      id: paymentId,
+      amount: 1000,
+      dueDate: new Date().toISOString(),
+      status: "PAID",
+      paidAt: new Date().toISOString(),
+      transactionId: result.transactionId,
+      userId: req.user!.id,
+    }
 
     res.json({ payment: updatedPayment, transaction: result })
   } catch (error) {

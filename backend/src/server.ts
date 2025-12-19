@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true }))
 // Session configuration
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "fastfinance-session-secret-change-in-production",
+    secret: process.env.SESSION_SECRET || "ascendia-session-secret-change-in-production",
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -56,6 +56,6 @@ app.use("/api/support", supportRoutes)
 app.use(errorHandler)
 
 app.listen(PORT, () => {
-  console.log(`FastFinance backend running on port ${PORT}`)
+  console.log(`Ascendia backend running on port ${PORT}`)
 })
 

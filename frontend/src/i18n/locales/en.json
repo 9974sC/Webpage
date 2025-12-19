@@ -21,7 +21,51 @@
     "howItWorks": "How it works?",
     "products": "Products",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "personalizedCalculator": {
+      "title": "Personalized credit calculator",
+      "subtitle": "Fill out a short form, and we will prepare the best credit offer for you",
+      "duration": {
+        "title": "Duration",
+        "content": "Filling out the form will take you about **3-5 minutes**. After submitting the data, our system analyzes your financial situation and prepares personalized offers. You will usually receive the results within **a few hours** at the provided email address."
+      },
+      "documents": {
+        "title": "Required documents",
+        "intro": "For credit application verification, you will need:",
+        "identity": "Identity document (ID card or passport)",
+        "income": "Proof of income (employment certificate, PIT, employment contract)",
+        "address": "Address confirmation document (utility bill, rental agreement)"
+      },
+      "calculator": {
+        "title": "Credit calculator",
+        "subtitle": "Receive a personalized credit offer in a few minutes",
+        "whatIs": {
+          "title": "What is a credit calculator?",
+          "paragraph1": "A credit calculator is a simple tool that helps estimate how much the loan you want to take will cost. Thanks to it, you can check what monthly installment you will have to pay and how much you will collectively pay for the borrowed money.",
+          "paragraph2": {
+            "title": "For older people:",
+            "content": "If you are unsure how the calculator works, don't worry - it's very simple. Just provide basic information about yourself and your income, and we will help you find the best credit offer. You can fill out the form at your own pace, and if you need help, our team is ready to answer your questions."
+          }
+        }
+      },
+      "importantInfo": {
+        "title": "Important information before starting",
+        "duration": {
+          "title": "Duration:",
+          "content": "Filling out the form will take about 3-5 minutes. After submitting the data, analysis and preparation of the offer usually takes a few hours."
+        },
+        "documents": {
+          "title": "Documents needed for verification:",
+          "content": "After receiving an initial offer, you may be asked to provide identity documents (ID card or passport), proof of income (employment certificate, PIT, employment contract), and address confirmation documents (utility bill, rental agreement)."
+        },
+        "security": {
+          "title": "Data security:",
+          "content": "All provided information is securely stored and protected in accordance with GDPR regulations. Your data will not be shared with third parties without your consent."
+        }
+      },
+      "gdprConsent": "I consent to the processing of my personal data in accordance with Regulation (EU) 2016/679 of the European Parliament and of the Council (GDPR). The data administrator is Ascendia Sp. z o.o. The data will be processed for the purpose of presenting financial offers and fulfilling contracts. Providing data is voluntary, but necessary to use the service. I have the right to access, correct, delete, and restrict the processing of my data.",
+      "startCalculation": "Start calculation"
+    }
   },
   "auth": {
     "email": "Email address",
@@ -95,7 +139,7 @@
   },
   "gdpr": {
     "consent": "I consent to the processing of my personal data in accordance with GDPR.",
-    "info": "The administrator of personal data is FastFinance Sp. z o.o. Personal data is processed for the purpose of presenting financial offers, contract execution and fulfillment of legal obligations. Providing data is voluntary but necessary to use the services. The user has the right to access, correct, delete and limit the processing of their data in accordance with Regulation (EU) 2016/679 (GDPR)."
+    "info": "The administrator of personal data is Ascendia Sp. z o.o. Personal data is processed for the purpose of presenting financial offers, contract execution and fulfillment of legal obligations. Providing data is voluntary but necessary to use the services. The user has the right to access, correct, delete and limit the processing of their data in accordance with Regulation (EU) 2016/679 (GDPR)."
   },
   "profile": {
     "title": "Profile",
@@ -104,13 +148,28 @@
   },
   "about": {
     "title": "About Us",
-    "description": "FastFinance is a modern financial platform dedicated to Polish customers."
+    "description": "Ascendia is a modern financial platform dedicated to Polish customers."
   },
   "contact": {
     "title": "Contact",
+    "subtitle": "We're here to help you with all your financial needs",
     "email": "Email",
     "phone": "Phone",
-    "address": "Address"
+    "address": "Address",
+    "workHours": "Business Hours",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "closed": "Closed",
+    "emergency": "For urgent matters outside business hours, please use our online support system or email us. We typically respond within 24 hours.",
+    "description1": "At Ascendia, we believe that exceptional customer service is the foundation of lasting relationships. Our dedicated team of financial advisors and customer support specialists is committed to providing you with personalized assistance tailored to your unique needs. Whether you're exploring loan options, managing existing accounts, or seeking financial guidance, we're here to help you navigate every step of your financial journey with confidence and clarity.",
+    "description2": "Our customer service center operates with extended hours to accommodate your busy schedule. From Monday through Friday, our experienced advisors are available from 8:00 AM to 8:00 PM, ensuring you can reach us when it's most convenient for you. On Saturdays, we maintain reduced hours from 9:00 AM to 3:00 PM, while Sundays are reserved for rest, though our online support system remains accessible 24/7 for your convenience.",
+    "description3": "We understand that financial questions and concerns don't always arise during standard business hours. That's why we've implemented a comprehensive online support system that allows you to submit inquiries, track loan applications, and access your account information at any time. Our intelligent chatbot can instantly answer common questions, while more complex issues are promptly escalated to our human specialists who will respond within 24 hours, even on weekends and holidays.",
+    "description4": "When you contact us, you can expect prompt, professional, and empathetic service from our team. We take the time to understand your situation thoroughly, providing clear explanations and transparent information about all our products and services. Your satisfaction and financial well-being are our top priorities, and we're continuously working to improve our services based on your feedback. Don't hesitate to reach out - we're here to support you every step of the way."
   }
 }
 

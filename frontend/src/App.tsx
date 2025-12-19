@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Routes, Route } from "react-router-dom"
 import Header from "./components/layout/Header"
 import ProtectedRoute from "./components/layout/ProtectedRoute"
@@ -12,8 +13,26 @@ import Support from "./app/routes/Support"
 import About from "./app/routes/About"
 import Contact from "./app/routes/Contact"
 import Admin from "./app/routes/Admin"
+import Gdpr from "./app/routes/Gdpr"
+import Education from "./app/routes/Education"
+import { useAuthStore } from "./store"
 
 function App() {
+  const { setAuth, user } = useAuthStore()
+
+  useEffect(() => {
+    if (!user) {
+      const adminUser = {
+        id: "admin-1",
+        email: "admin@ascendia.pl",
+        firstName: "Admin",
+        lastName: "User",
+        role: "ADMIN" as const,
+      }
+      setAuth(adminUser)
+    }
+  }, [user, setAuth])
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -53,16 +72,11 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/support"
-          element={
-            <ProtectedRoute>
-              <Support />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/support" element={<Support />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/gdpr" element={<Gdpr />} />
+        <Route path="/education" element={<Education />} />
         <Route
           path="/admin/*"
           element={
