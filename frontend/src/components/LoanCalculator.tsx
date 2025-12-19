@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Calculator, CheckCircle, TrendingUp, DollarSign, Calendar } from "lucide-react"
+import { Calculator, CheckCircle, TrendingUp, DollarSign, Calendar, ArrowLeft, ArrowRight } from "lucide-react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, TooltipProps } from "recharts"
 
 interface QuestionnaireData {
@@ -32,6 +32,9 @@ interface PaymentPlan {
 
 interface LoanCalculatorProps {
   questionnaireData?: QuestionnaireData
+  onCalculationChange?: (calculation: { monthlyPayment: number; totalAmount: number; totalInterest: number } | null) => void
+  onBack?: () => void
+  onProceedToApplication?: () => void
 }
 
 function calculateLoanPayment(
@@ -276,7 +279,7 @@ const CustomInterestTooltip = ({ active, payload, label }: TooltipProps<number, 
   return null
 }
 
-export default function LoanCalculator({ questionnaireData }: LoanCalculatorProps) {
+export default function LoanCalculator({ questionnaireData, onCalculationChange, onBack, onProceedToApplication }: LoanCalculatorProps) {
   const [amount, setAmount] = useState(questionnaireData?.loanAmount || 50000)
   const [interestRate, setInterestRate] = useState(6.5)
   const [durationMonths, setDurationMonths] = useState(60)
@@ -307,27 +310,38 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
       const preSelected = plans.find(p => p.durationMonths === preferredMonths) || plans[4]
       setSelectedPlan(preSelected)
       setDurationMonths(preSelected.durationMonths)
-      setCalculation({
+      const calc = {
         monthlyPayment: preSelected.monthlyPayment,
         totalAmount: preSelected.totalAmount,
         totalInterest: preSelected.totalInterest,
-      })
+      }
+      setCalculation(calc)
+      if (onCalculationChange) {
+        onCalculationChange(calc)
+      }
     }
-  }, [questionnaireData])
+  }, [questionnaireData, onCalculationChange])
 
   const handleCalculate = () => {
     const result = calculateLoanPayment(amount, interestRate, durationMonths)
     setCalculation(result)
+    if (onCalculationChange) {
+      onCalculationChange(result)
+    }
   }
 
   const handlePlanSelect = (plan: PaymentPlan) => {
     setSelectedPlan(plan)
     setDurationMonths(plan.durationMonths)
-    setCalculation({
+    const calc = {
       monthlyPayment: plan.monthlyPayment,
       totalAmount: plan.totalAmount,
       totalInterest: plan.totalInterest,
-    })
+    }
+    setCalculation(calc)
+    if (onCalculationChange) {
+      onCalculationChange(calc)
+    }
   }
 
   const availableIncome = questionnaireData 
@@ -337,17 +351,32 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
   const balanceChartData = useMemo(() => {
     if (!calculation || !amount || !interestRate || !durationMonths) return []
     const data = calculateLoanBalanceOverTime(amount, interestRate, durationMonths)
-    return data.filter((_, index) => index % 6 === 0 || index === data.length - 1)
+    // Include all data points for full range display
+    return data
   }, [calculation, amount, interestRate, durationMonths])
 
   const interestChartData = useMemo(() => {
     if (!calculation || !amount || !interestRate || !durationMonths) return []
     const data = calculateCumulativeInterestOverTime(amount, interestRate, durationMonths)
-    return data.filter((_, index) => index % 6 === 0 || index === data.length - 1)
+    // Include all data points for full range display
+    return data
   }, [calculation, amount, interestRate, durationMonths])
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
+      {/* Back Button */}
+      {questionnaireData && onBack && (
+        <div className="mb-4">
+          <Button
+            variant="outline"
+            onClick={onBack}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Wróć do kwestionariusza
+          </Button>
+        </div>
+      )}
       {/* Summary Card */}
       {questionnaireData && (
         <Card className="border-2 border-muted-foreground/20 bg-muted/20">
@@ -399,10 +428,10 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
         </Card>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         {/* Main Calculator */}
-        <div className="lg:col-span-2">
-          <Card className="border-2 border-muted-foreground/20 bg-card">
+        <div className="lg:col-span-2 flex">
+          <Card className="border-2 border-muted-foreground/20 bg-card w-full flex flex-col">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
@@ -418,23 +447,24 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="calc-amount" className="text-sm font-medium text-muted-foreground">
-                  Kwota kredytu (PLN)
-                </Label>
-                <Input
-                  id="calc-amount"
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(Number(e.target.value))}
-                  min={1000}
-                  max={500000}
-                  step={1000}
-                  className="bg-muted/50 border-muted-foreground/20 text-foreground"
-                  disabled={!!questionnaireData}
-                />
-              </div>
+            <CardContent className="flex-1 flex flex-col">
+              <div className="space-y-6 flex-1">
+                <div className="space-y-2">
+                  <Label htmlFor="calc-amount" className="text-sm font-medium text-muted-foreground">
+                    Kwota kredytu (PLN)
+                  </Label>
+                  <Input
+                    id="calc-amount"
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(Number(e.target.value))}
+                    min={1000}
+                    max={500000}
+                    step={1000}
+                    className="bg-muted/50 border-muted-foreground/20 text-foreground"
+                    disabled={!!questionnaireData}
+                  />
+                </div>
 
               <div className="space-y-2">
                 <Label htmlFor="calc-rate" className="text-sm font-medium text-muted-foreground">
@@ -479,51 +509,17 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
                 )}
               </div>
 
-              <Button 
-                onClick={handleCalculate} 
-                className="w-full bg-muted-foreground hover:bg-muted-foreground/90 text-muted" 
-                size="lg"
-              >
-                Oblicz ratę
-              </Button>
+                <Button 
+                  onClick={handleCalculate} 
+                  className="w-full bg-muted-foreground hover:bg-muted-foreground/90 text-muted" 
+                  size="lg"
+                >
+                  Oblicz ratę
+                </Button>
 
-              {calculation && (
-                <div className="mt-6 p-6 bg-muted/30 rounded-lg border-2 border-muted-foreground/20 space-y-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Miesięczna rata</p>
-                    <p className="text-3xl font-extrabold text-foreground">
-                      {calculation.monthlyPayment.toLocaleString("pl-PL", {
-                        style: "currency",
-                        currency: "PLN",
-                      })}
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Całkowita kwota</p>
-                      <p className="text-xl font-extrabold text-foreground">
-                        {calculation.totalAmount.toLocaleString("pl-PL", {
-                          style: "currency",
-                          currency: "PLN",
-                        })}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Odsetki</p>
-                      <p className="text-xl font-extrabold text-foreground">
-                        {calculation.totalInterest.toLocaleString("pl-PL", {
-                          style: "currency",
-                          currency: "PLN",
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Loan Balance Graph */}
-              {calculation && balanceChartData.length > 0 && (
-                <div className="mt-6 p-4 bg-muted/30 rounded-lg border-2 border-muted-foreground/20">
+                {/* Loan Balance Graph */}
+                {calculation && balanceChartData.length > 0 && (
+                  <div className="p-4 bg-muted/30 rounded-lg border-2 border-muted-foreground/20">
                   <h4 className="font-semibold text-foreground mb-4">Pozostała kwota do spłaty w czasie</h4>
                   <div className="h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
@@ -533,6 +529,10 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
                           dataKey="month"
                           label={{ value: "Miesiąc", position: "insideBottom", offset: -5 }}
                           stroke="#6b7280"
+                          domain={[0, durationMonths]}
+                          type="number"
+                          scale="linear"
+                          allowDecimals={false}
                         />
                         <YAxis
                           label={{ value: "Kwota (PLN)", angle: -90, position: "insideLeft" }}
@@ -565,12 +565,12 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
                   <p className="text-xs text-muted-foreground mt-2">
                     Wykres pokazuje pozostałą kwotę do spłaty oraz odsetki do zapłaty w czasie
                   </p>
-                </div>
-              )}
+                  </div>
+                )}
 
-              {/* Cumulative Interest Graph */}
-              {calculation && interestChartData.length > 0 && (
-                <div className="mt-6 p-4 bg-muted/30 rounded-lg border-2 border-muted-foreground/20">
+                {/* Cumulative Interest Graph */}
+                {calculation && interestChartData.length > 0 && (
+                  <div className="p-4 bg-muted/30 rounded-lg border-2 border-muted-foreground/20">
                   <h4 className="font-semibold text-foreground mb-4">Odsetki do zapłaty w czasie</h4>
                   <div className="h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
@@ -580,6 +580,10 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
                           dataKey="month"
                           label={{ value: "Miesiąc", position: "insideBottom", offset: -5 }}
                           stroke="#6b7280"
+                          domain={[0, durationMonths]}
+                          type="number"
+                          scale="linear"
+                          allowDecimals={false}
                         />
                         <YAxis
                           label={{ value: "Kwota (PLN)", angle: -90, position: "insideLeft" }}
@@ -612,6 +616,93 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
                   <p className="text-xs text-muted-foreground mt-2">
                     Wykres pokazuje odsetki do zapłaty (skumulowane odsetki) w czasie
                   </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Summary and Confirm Button */}
+              {calculation && (
+                <div className="pt-6 border-t-2 border-muted-foreground/20 mt-6">
+                  <div className="flex flex-col md:flex-row items-stretch gap-6">
+                    {/* Cost Summary */}
+                    <div className="p-6 bg-muted/30 rounded-lg border-2 border-muted-foreground/20 space-y-4 min-w-[300px] flex-1 flex flex-col">
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Miesięczna rata</p>
+                        <p className="text-3xl font-extrabold text-foreground">
+                          {calculation.monthlyPayment.toLocaleString("pl-PL", {
+                            style: "currency",
+                            currency: "PLN",
+                          })}
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Całkowita kwota</p>
+                          <p className="text-xl font-extrabold text-foreground">
+                            {calculation.totalAmount.toLocaleString("pl-PL", {
+                              style: "currency",
+                              currency: "PLN",
+                            })}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Odsetki</p>
+                          <p className="text-xl font-extrabold text-foreground">
+                            {calculation.totalInterest.toLocaleString("pl-PL", {
+                              style: "currency",
+                              currency: "PLN",
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 mt-auto">
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Oprocentowanie</p>
+                          <p className="text-xl font-extrabold text-foreground">
+                            {interestRate.toFixed(2)}%
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Okres spłaty</p>
+                          <p className="text-xl font-extrabold text-foreground">
+                            {durationMonths} {durationMonths === 1 ? 'miesiąc' : durationMonths < 5 ? 'miesiące' : 'miesięcy'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Button section with terms */}
+                    {onProceedToApplication && (
+                      <div className="flex flex-col gap-4 min-w-[300px] flex-1">
+                        {/* Terms and Regulations */}
+                        <div className="p-4 bg-muted/20 rounded-lg border border-muted-foreground/20 space-y-2">
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            <strong className="text-foreground">Warunki kredytowe:</strong> Oferta jest ważna przez 7 dni od daty wygenerowania. 
+                            Oprocentowanie może ulec zmianie w zależności od weryfikacji dokumentów. 
+                            Minimalna kwota kredytu: 1 000 PLN, maksymalna: 500 000 PLN.
+                          </p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            <strong className="text-foreground">Regulamin:</strong> Akceptując ofertę, potwierdzasz zapoznanie się z 
+                            <a href="/gdpr" className="text-primary hover:underline ml-1">regulaminem</a> i 
+                            <a href="/gdpr" className="text-primary hover:underline ml-1">polityką prywatności</a>. 
+                            Kredytobiorca zobowiązuje się do terminowej spłaty rat zgodnie z umową kredytową.
+                          </p>
+                        </div>
+                        
+                        {/* Button to proceed */}
+                        <Button
+                          onClick={onProceedToApplication}
+                          size="lg"
+                          className="h-auto min-h-[64px] px-6 py-4 text-lg md:text-xl font-bold whitespace-normal break-words"
+                        >
+                          <span className="flex items-center justify-center gap-2 flex-wrap">
+                            <span>Wybierz kredyt i przejdź do wniosku</span>
+                            <ArrowRight className="h-6 w-6 flex-shrink-0" />
+                          </span>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -620,13 +711,13 @@ export default function LoanCalculator({ questionnaireData }: LoanCalculatorProp
 
         {/* Payment Plans Sidebar */}
         {questionnaireData && paymentPlans.length > 0 && (
-          <div className="lg:col-span-1">
-            <Card className="border-2 border-muted-foreground/20 bg-card sticky top-4">
+          <div className="lg:col-span-1 flex">
+            <Card className="border-2 border-muted-foreground/20 bg-card w-full flex flex-col">
               <CardHeader>
                 <CardTitle className="text-lg text-foreground">Dostępne plany spłaty</CardTitle>
                 <CardDescription className="text-muted-foreground">Wybierz okres spłaty, który Ci odpowiada</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3 max-h-[600px] overflow-y-auto">
+              <CardContent className="space-y-3 flex-1 overflow-y-auto">
                 {paymentPlans.map((plan) => (
                   <button
                     key={plan.durationMonths}
