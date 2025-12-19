@@ -176,39 +176,61 @@ interface LoanScenario {
 const CustomTooltip = ({ active, payload, label, loanScenarios, chartData }: TooltipProps<number, string> & { loanScenarios: LoanScenario[], chartData: any[] }) => {
   if (active && payload && payload.length) {
     const data = payload[0]
-    const scenario = loanScenarios.find((s) => s.name === data.dataKey)
-    const paymentKey = `${data.dataKey}_payment`
-    const interestDueKey = `${data.dataKey}_interestDue`
+    const dataKey = data.dataKey as string
+    const isInterestLine = dataKey.endsWith("_interestDue")
+    const scenarioName = isInterestLine ? dataKey.replace("_interestDue", "") : dataKey
+    const scenario = loanScenarios.find((s) => s.name === scenarioName)
+    const paymentKey = `${scenarioName}_payment`
+    const interestDueKey = `${scenarioName}_interestDue`
     const currentData = chartData.find((d) => d.month === label)
     const payment = currentData?.[paymentKey] as number
     const interestDue = currentData?.[interestDueKey] as number
+    
+    // Don't show tooltip if the month is beyond the loan term
+    if (scenario && label > scenario.durationMonths) {
+      return null
+    }
+    
+    // Don't show tooltip if value is null
+    if (data.value === null || data.value === undefined) {
+      return null
+    }
 
     return (
       <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+        {scenario && (
+          <p className="font-semibold mb-1 text-sm">
+            {scenario.name} ({scenario.interestRate}%, {scenario.durationMonths} mies.)
+          </p>
+        )}
         <p className="font-semibold mb-2">{`Miesiąc ${label}`}</p>
         <div className="space-y-1">
-          <div>
-            <span className="font-semibold">Pozostała kwota: </span>
-            {(data.value as number).toLocaleString("pl-PL", {
-              style: "currency",
-              currency: "PLN",
-              maximumFractionDigits: 0,
-            })}
-          </div>
-          {payment && (
-            <div>
-              <span className="font-semibold">Miesięczna rata: </span>
-              {payment.toLocaleString("pl-PL", {
-                style: "currency",
-                currency: "PLN",
-                maximumFractionDigits: 2,
-              })}
-            </div>
+          {!isInterestLine && (
+            <>
+              <div>
+                <span className="font-semibold">Pozostała kwota: </span>
+                {(data.value as number).toLocaleString("pl-PL", {
+                  style: "currency",
+                  currency: "PLN",
+                  maximumFractionDigits: 0,
+                })}
+              </div>
+              {payment && payment > 0 && (
+                <div>
+                  <span className="font-semibold">Miesięczna rata: </span>
+                  {payment.toLocaleString("pl-PL", {
+                    style: "currency",
+                    currency: "PLN",
+                    maximumFractionDigits: 2,
+                  })}
+                </div>
+              )}
+            </>
           )}
-          {interestDue !== undefined && interestDue > 0 && (
+          {(isInterestLine || (interestDue !== undefined && interestDue > 0)) && (
             <div>
               <span className="font-semibold">Odsetki do zapłaty: </span>
-              {interestDue.toLocaleString("pl-PL", {
+              {(isInterestLine ? data.value : interestDue).toLocaleString("pl-PL", {
                 style: "currency",
                 currency: "PLN",
                 maximumFractionDigits: 0,
@@ -225,28 +247,51 @@ const CustomTooltip = ({ active, payload, label, loanScenarios, chartData }: Too
 const CustomInterestTooltip = ({ active, payload, label, loanScenarios, chartData }: TooltipProps<number, string> & { loanScenarios: LoanScenario[], chartData: any[] }) => {
   if (active && payload && payload.length) {
     const data = payload[0]
-    const scenario = loanScenarios.find((s) => s.name === data.dataKey)
-    const totalKey = `${data.dataKey}_total`
+    const dataKey = data.dataKey as string
+    const isTotalLine = dataKey.endsWith("_total")
+    const scenarioName = isTotalLine ? dataKey.replace("_total", "") : dataKey
+    const scenario = loanScenarios.find((s) => s.name === scenarioName)
+    const totalKey = `${scenarioName}_total`
     const currentData = chartData.find((d) => d.month === label)
     const totalPaid = currentData?.[totalKey] as number
-    const interestDue = data.value as number
+    const interestDue = isTotalLine ? undefined : data.value as number
+    
+    // Don't show tooltip if the month is beyond the loan term
+    if (scenario && label > scenario.durationMonths) {
+      return null
+    }
+    
+    // Don't show tooltip if value is null
+    if (data.value === null || data.value === undefined) {
+      return null
+    }
+    
+    const totalLine = payload.find((p: any) => p.dataKey?.endsWith("_total"))
+    const totalAmount = totalLine?.value as number | undefined
 
     return (
       <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+        {scenario && (
+          <p className="font-semibold mb-1 text-sm">
+            {scenario.name} ({scenario.interestRate}%, {scenario.durationMonths} mies.)
+          </p>
+        )}
         <p className="font-semibold mb-2">{`Miesiąc ${label}`}</p>
         <div className="space-y-1">
-          <div>
-            <span className="font-semibold">Odsetki do zapłaty: </span>
-            {interestDue.toLocaleString("pl-PL", {
-              style: "currency",
-              currency: "PLN",
-              maximumFractionDigits: 0,
-            })}
-          </div>
-          {totalPaid && (
+          {!isTotalLine && interestDue !== undefined && interestDue > 0 && (
+            <div>
+              <span className="font-semibold">Odsetki do zapłaty: </span>
+              {interestDue.toLocaleString("pl-PL", {
+                style: "currency",
+                currency: "PLN",
+                maximumFractionDigits: 0,
+              })}
+            </div>
+          )}
+          {(totalAmount || totalPaid) && (totalAmount || totalPaid)! > 0 && (
             <div>
               <span className="font-semibold">Całkowita spłata: </span>
-              {totalPaid.toLocaleString("pl-PL", {
+              {(totalAmount || totalPaid)!.toLocaleString("pl-PL", {
                 style: "currency",
                 currency: "PLN",
                 maximumFractionDigits: 0,
@@ -261,25 +306,41 @@ const CustomInterestTooltip = ({ active, payload, label, loanScenarios, chartDat
 }
 
 const getLoanScenarios = (amount: number, interestRate: number, durationMonths: number): LoanScenario[] => {
+  const baseRate = interestRate || 6.5
+  
+  // Shorter terms get lower rates, longer terms get higher rates
+  // Base rate applies to 60 months, adjust up/down from there
+  // 0.3% adjustment per year difference from base (60 months)
+  const shortTermMonths = 36
+  const mediumTermMonths = 60
+  const longTermMonths = 120
+  
+  const shortTermAdjustment = ((shortTermMonths - mediumTermMonths) / 12) * 0.3 // -0.6% for 24 months shorter (2 years)
+  const longTermAdjustment = ((longTermMonths - mediumTermMonths) / 12) * 0.3 // +1.5% for 60 months longer (5 years)
+  
+  const shortTermRate = Math.max(4.5, Math.min(15.0, baseRate + shortTermAdjustment))
+  const mediumTermRate = baseRate
+  const longTermRate = Math.max(4.5, Math.min(15.0, baseRate + longTermAdjustment))
+  
   return [
     {
       name: "Krótki okres (36 mies.)",
       amount: amount || 50000,
-      interestRate: interestRate || 7.5,
+      interestRate: shortTermRate,
       durationMonths: 36,
       color: "#8B4513",
     },
     {
       name: "Średni okres (60 mies.)",
       amount: amount || 50000,
-      interestRate: interestRate || 6.5,
+      interestRate: mediumTermRate,
       durationMonths: 60,
       color: "#D2691E",
     },
     {
       name: "Długi okres (120 mies.)",
       amount: amount || 50000,
-      interestRate: interestRate || 5.8,
+      interestRate: longTermRate,
       durationMonths: 120,
       color: "#CD853F",
     },
@@ -305,26 +366,38 @@ export default function SimpleCalculator() {
     const maxMonths = Math.max(...loanScenarios.map((s) => s.durationMonths))
     const data: Array<{
       month: number
-      [key: string]: number | string
+      [key: string]: number | string | null
     }> = []
 
     for (let month = 0; month <= maxMonths; month += 6) {
-      const point: { month: number; [key: string]: number | string } = { month }
+      const point: { month: number; [key: string]: number | string | null } = { month }
       loanScenarios.forEach((scenario) => {
-        const scenarioData = calculateLoanBalanceOverTime(
-          scenario.amount,
-          scenario.interestRate,
-          scenario.durationMonths
-        )
-        const monthData = scenarioData.find((d) => d.month === month)
-        if (monthData) {
-          point[scenario.name] = monthData.balance
-          point[`${scenario.name}_payment`] = monthData.monthlyPayment
-          point[`${scenario.name}_interestDue`] = monthData.interestDue
+        // Only show data for months within the loan term
+        if (month <= scenario.durationMonths) {
+          const scenarioData = calculateLoanBalanceOverTime(
+            scenario.amount,
+            scenario.interestRate,
+            scenario.durationMonths
+          )
+          const monthData = scenarioData.find((d) => d.month === month)
+          if (monthData) {
+            point[scenario.name] = monthData.balance
+            point[`${scenario.name}_payment`] = monthData.monthlyPayment
+            point[`${scenario.name}_interestDue`] = monthData.interestDue
+          } else {
+            // If exact month not found, use the last available data point
+            const lastData = scenarioData[scenarioData.length - 1]
+            if (lastData) {
+              point[scenario.name] = lastData.balance
+              point[`${scenario.name}_payment`] = lastData.monthlyPayment
+              point[`${scenario.name}_interestDue`] = lastData.interestDue
+            }
+          }
         } else {
-          point[scenario.name] = 0
-          point[`${scenario.name}_payment`] = 0
-          point[`${scenario.name}_interestDue`] = 0
+          // Loan term has ended, don't show data for months beyond the term
+          point[scenario.name] = null
+          point[`${scenario.name}_payment`] = null
+          point[`${scenario.name}_interestDue`] = null
         }
       })
       data.push(point)
@@ -337,24 +410,35 @@ export default function SimpleCalculator() {
     const maxMonths = Math.max(...loanScenarios.map((s) => s.durationMonths))
     const data: Array<{
       month: number
-      [key: string]: number | string
+      [key: string]: number | string | null
     }> = []
 
     for (let month = 0; month <= maxMonths; month += 6) {
-      const point: { month: number; [key: string]: number | string } = { month }
+      const point: { month: number; [key: string]: number | string | null } = { month }
       loanScenarios.forEach((scenario) => {
-        const scenarioData = calculateCumulativeInterestOverTime(
-          scenario.amount,
-          scenario.interestRate,
-          scenario.durationMonths
-        )
-        const monthData = scenarioData.find((d) => d.month === month)
-        if (monthData) {
-          point[scenario.name] = monthData.cumulativeInterest
-          point[`${scenario.name}_total`] = monthData.totalPaid
+        // Only show data for months within the loan term
+        if (month <= scenario.durationMonths) {
+          const scenarioData = calculateCumulativeInterestOverTime(
+            scenario.amount,
+            scenario.interestRate,
+            scenario.durationMonths
+          )
+          const monthData = scenarioData.find((d) => d.month === month)
+          if (monthData) {
+            point[scenario.name] = monthData.cumulativeInterest
+            point[`${scenario.name}_total`] = monthData.totalPaid
+          } else {
+            // If exact month not found, use the last available data point
+            const lastData = scenarioData[scenarioData.length - 1]
+            if (lastData) {
+              point[scenario.name] = lastData.cumulativeInterest
+              point[`${scenario.name}_total`] = lastData.totalPaid
+            }
+          }
         } else {
-          point[scenario.name] = 0
-          point[`${scenario.name}_total`] = 0
+          // Loan term has ended, don't show data for months beyond the term
+          point[scenario.name] = null
+          point[`${scenario.name}_total`] = null
         }
       })
       data.push(point)
@@ -438,22 +522,6 @@ export default function SimpleCalculator() {
                   <Tooltip
                     content={<CustomTooltip loanScenarios={loanScenarios} chartData={chartData} />}
                   />
-                  <Legend
-                    wrapperStyle={{ paddingTop: "10px" }}
-                    formatter={(value) => {
-                      if (value.endsWith(" - Odsetki")) {
-                        const scenarioName = value.replace(" - Odsetki", "")
-                        const scenario = loanScenarios.find((s) => s.name === scenarioName)
-                        return scenario
-                          ? `${scenarioName} - Odsetki (${scenario.interestRate}%, ${scenario.durationMonths} mies.)`
-                          : value
-                      }
-                      const scenario = loanScenarios.find((s) => s.name === value)
-                      return scenario
-                        ? `${value} (${scenario.interestRate}%, ${scenario.durationMonths} mies.)`
-                        : value
-                    }}
-                  />
                   {loanScenarios.map((scenario) => (
                     <Line
                       key={scenario.name}
@@ -499,21 +567,12 @@ export default function SimpleCalculator() {
                     stroke="#6b7280"
                   />
                   <YAxis
-                    label={{ value: "Odsetki (PLN)", angle: -90, position: "insideLeft" }}
+                    label={{ value: "Kwota (PLN)", angle: -90, position: "insideLeft" }}
                     stroke="#6b7280"
                     tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
                   />
                   <Tooltip
                     content={<CustomInterestTooltip loanScenarios={loanScenarios} chartData={interestChartData} />}
-                  />
-                  <Legend
-                    wrapperStyle={{ paddingTop: "10px" }}
-                    formatter={(value) => {
-                      const scenario = loanScenarios.find((s) => s.name === value)
-                      return scenario
-                        ? `${value} (${scenario.interestRate}%, ${scenario.durationMonths} mies.)`
-                        : value
-                    }}
                   />
                   {loanScenarios.map((scenario) => (
                     <Line
@@ -524,6 +583,19 @@ export default function SimpleCalculator() {
                       strokeWidth={2}
                       dot={false}
                       activeDot={{ r: 4 }}
+                    />
+                  ))}
+                  {loanScenarios.map((scenario) => (
+                    <Line
+                      key={`${scenario.name}_total`}
+                      type="monotone"
+                      dataKey={`${scenario.name}_total`}
+                      stroke={scenario.color}
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      dot={false}
+                      activeDot={{ r: 4 }}
+                      hide={true}
                     />
                   ))}
                 </LineChart>
