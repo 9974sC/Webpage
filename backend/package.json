@@ -1,7 +1,7 @@
 {
-  "name": "fastfinance-backend",
+  "name": "ascendia-backend",
   "version": "1.0.0",
-  "description": "FastFinance backend API",
+  "description": "Ascendia backend API",
   "main": "dist/server.js",
   "prisma": {
     "seed": "tsx prisma/seed.ts"

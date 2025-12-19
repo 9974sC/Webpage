@@ -73,7 +73,7 @@ export default function Register() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-3xl">{t("common.register")}</CardTitle>
-          <CardDescription>Utwórz nowe konto w FastFinance</CardDescription>
+          <CardDescription>Utwórz nowe konto w Ascendia</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

@@ -1,7 +1,7 @@
 import express from "express"
-import { prisma } from "../lib/prisma"
 import { authenticate, AuthRequest } from "../middleware/auth"
 import { z } from "zod"
+import { prisma } from "../lib/prisma"
 
 const router = express.Router()
 
@@ -23,19 +23,38 @@ function calculateLoanPayment(
   }
 }
 
-// Get user's loans
+// Generate fake loans for dashboard
+function generateFakeUserLoans() {
+  const amounts = [25000, 50000, 75000, 100000]
+  const interestRates = [4.0, 4.5, 5.0, 5.5]
+  const durations = [24, 36, 48, 60]
+  const statuses = ["PENDING", "ACTIVE", "COMPLETED"]
+  
+  return Array.from({ length: 3 }, (_, i) => {
+    const amount = amounts[Math.floor(Math.random() * amounts.length)]
+    const interestRate = interestRates[Math.floor(Math.random() * interestRates.length)]
+    const durationMonths = durations[Math.floor(Math.random() * durations.length)]
+    const monthlyRate = interestRate / 100 / 12
+    const monthlyPayment = Math.round((amount * monthlyRate * Math.pow(1 + monthlyRate, durationMonths)) / (Math.pow(1 + monthlyRate, durationMonths) - 1) * 100) / 100
+    
+    return {
+      id: `loan-${i + 1}`,
+      amount,
+      interestRate,
+      durationMonths,
+      status: statuses[Math.floor(Math.random() * statuses.length)],
+      monthlyPayment,
+      totalAmount: Math.round(monthlyPayment * durationMonths * 100) / 100,
+      createdAt: new Date(Date.now() - (i + 1) * 30 * 24 * 60 * 60 * 1000),
+      payments: [],
+    }
+  })
+}
+
+// Get user's loans - Proof of concept: return fake data
 router.get("/my-loans", authenticate, async (req: AuthRequest, res) => {
   try {
-    const loans = await prisma.loan.findMany({
-      where: { userId: req.user!.id },
-      include: {
-        payments: {
-          orderBy: { dueDate: "asc" },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    })
-
+    const loans = generateFakeUserLoans()
     res.json({ loans })
   } catch (error) {
     console.error("Get loans error:", error)
@@ -72,7 +91,7 @@ router.post("/calculate", authenticate, async (req: AuthRequest, res) => {
   }
 })
 
-// Create loan application
+// Create loan application - Proof of concept: return fake loan
 router.post("/apply", authenticate, async (req: AuthRequest, res) => {
   try {
     const schema = z.object({
@@ -88,35 +107,17 @@ router.post("/apply", authenticate, async (req: AuthRequest, res) => {
       data.durationMonths
     )
 
-    const loan = await prisma.loan.create({
-      data: {
-        userId: req.user!.id,
-        amount: data.amount,
-        interestRate: data.interestRate,
-        durationMonths: data.durationMonths,
-        status: "PENDING",
-        monthlyPayment: calculation.monthlyPayment,
-        totalAmount: calculation.totalAmount,
-      },
-    })
-
-    // Create payment schedule
-    const payments = []
-    const now = new Date()
-    for (let i = 1; i <= data.durationMonths; i++) {
-      const dueDate = new Date(now.getFullYear(), now.getMonth() + i, 1)
-      payments.push({
-        loanId: loan.id,
-        userId: req.user!.id,
-        amount: calculation.monthlyPayment,
-        dueDate,
-        status: "UPCOMING" as const,
-      })
+    const loan = {
+      id: `loan-${Date.now()}`,
+      userId: req.user!.id,
+      amount: data.amount,
+      interestRate: data.interestRate,
+      durationMonths: data.durationMonths,
+      status: "PENDING",
+      monthlyPayment: calculation.monthlyPayment,
+      totalAmount: calculation.totalAmount,
+      createdAt: new Date(),
     }
-
-    await prisma.payment.createMany({
-      data: payments,
-    })
 
     res.json({ loan })
   } catch (error) {
@@ -125,6 +126,72 @@ router.post("/apply", authenticate, async (req: AuthRequest, res) => {
     }
     console.error("Apply loan error:", error)
     res.status(500).json({ error: "Loan application failed" })
+  }
+})
+
+// Save quote from questionnaire
+router.post("/quotes", authenticate, async (req: AuthRequest, res) => {
+  try {
+    const schema = z.object({
+      questionnaireData: z.any(),
+      loanAmount: z.number().min(1000).max(500000),
+      interestRate: z.number().min(1).max(30),
+      monthlyPayment: z.number(),
+      totalAmount: z.number(),
+    })
+
+    const data = schema.parse(req.body)
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + 7) // 7 days from now
+
+    const quote = await prisma.quote.create({
+      data: {
+        userId: req.user!.id,
+        questionnaireData: data.questionnaireData,
+        loanAmount: data.loanAmount,
+        interestRate: data.interestRate,
+        monthlyPayment: data.monthlyPayment,
+        totalAmount: data.totalAmount,
+        expiresAt,
+      },
+    })
+
+    res.json({ quote })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: error.errors })
+    }
+    console.error("Save quote error:", error)
+    res.status(500).json({ error: "Failed to save quote" })
+  }
+})
+
+// Get user's quote history
+router.get("/quotes", authenticate, async (req: AuthRequest, res) => {
+  try {
+    const quotes = await prisma.quote.findMany({
+      where: {
+        userId: req.user!.id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+
+    const now = new Date()
+    const quotesWithStatus = quotes.map((quote) => ({
+      ...quote,
+      isExpired: quote.expiresAt < now,
+      loanAmount: Number(quote.loanAmount),
+      interestRate: Number(quote.interestRate),
+      monthlyPayment: Number(quote.monthlyPayment),
+      totalAmount: Number(quote.totalAmount),
+    }))
+
+    res.json({ quotes: quotesWithStatus })
+  } catch (error) {
+    console.error("Get quotes error:", error)
+    res.status(500).json({ error: "Failed to fetch quotes" })
   }
 })
 

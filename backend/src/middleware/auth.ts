@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express"
-import { prisma } from "../lib/prisma"
 
 declare module "express-session" {
   interface SessionData {
@@ -23,21 +22,20 @@ export const authenticate = async (
   next: NextFunction
 ) => {
   try {
+    // Proof of concept: Auto-authenticate as admin if no session
     if (!req.session.userId) {
-      return res.status(401).json({ error: "Unauthorized" })
+      req.session.userId = "admin-1"
+      req.session.userEmail = "admin@ascendia.pl"
+      req.session.userRole = "ADMIN"
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: req.session.userId },
-      select: { id: true, email: true, role: true },
-    })
-
-    if (!user) {
-      req.session.destroy(() => {})
-      return res.status(401).json({ error: "User not found" })
+    // Proof of concept: Always set admin user
+    req.user = {
+      id: req.session.userId || "admin-1",
+      email: req.session.userEmail || "admin@ascendia.pl",
+      role: (req.session.userRole as "ADMIN") || "ADMIN",
     }
 
-    req.user = user
     next()
   } catch (error) {
     console.error("Authentication error:", error)

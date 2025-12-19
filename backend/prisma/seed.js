@@ -13,13 +13,13 @@ async function main() {
     const passwordUser = await bcrypt_1.default.hash("User#1234", 12);
     // Create admin user
     const admin = await prisma.user.upsert({
-        where: { email: "admin@fastfinance.pl" },
+        where: { email: "admin@ascendia.pl" },
         update: {},
         create: {
-            email: "admin@fastfinance.pl",
+            email: "admin@ascendia.pl",
             password: passwordAdmin,
             firstName: "Admin",
-            lastName: "FastFinance",
+            lastName: "Ascendia",
             role: client_1.Role.ADMIN,
         },
     });

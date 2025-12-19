@@ -4,34 +4,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#F2F6D0",
-        foreground: "#080708",
+        background: "#F5E8C4",
+        foreground: "#5B4937",
         primary: {
-          DEFAULT: "#473BF0",
+          DEFAULT: "#84C95F",
           foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#A0DDFF",
-          foreground: "#080708",
+          DEFAULT: "#D89C8A",
+          foreground: "#5B4937",
         },
         muted: {
-          DEFAULT: "#E8ECBE",
-          foreground: "#5A5958",
+          DEFAULT: "#E3D26F",
+          foreground: "#6A3952",
         },
         accent: {
-          DEFAULT: "#A0DDFF",
-          foreground: "#080708",
+          DEFAULT: "#6A3952",
+          foreground: "#FFFFFF",
         },
         destructive: {
           DEFAULT: "#DC2626",
           foreground: "#FFFFFF",
         },
-        border: "#D4D8AA",
+        border: "#D89C8A",
         input: "#FFFFFF",
-        ring: "#473BF0",
+        ring: "#84C95F",
         card: {
           DEFAULT: "#FFFFFF",
-          foreground: "#080708",
+          foreground: "#5B4937",
         },
       },
       borderRadius: {

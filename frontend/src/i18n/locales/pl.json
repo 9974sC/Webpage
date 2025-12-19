@@ -21,7 +21,51 @@
     "howItWorks": "Jak to działa?",
     "products": "Produkty",
     "about": "O nas",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "personalizedCalculator": {
+      "title": "Spersonalizowany kalkulator kredytowy",
+      "subtitle": "Wypełnij krótki formularz, a my przygotujemy dla Ciebie najlepszą ofertę kredytową",
+      "duration": {
+        "title": "Czas trwania",
+        "content": "Wypełnienie formularza zajmie Ci około **3-5 minut**. Po przesłaniu danych, nasz system analizuje Twoją sytuację finansową i przygotowuje spersonalizowane oferty. Wyniki otrzymasz zwykle w ciągu **kilku godzin** na podany adres e-mail."
+      },
+      "documents": {
+        "title": "Potrzebne dokumenty",
+        "intro": "Do weryfikacji wniosku kredytowego będziesz potrzebować:",
+        "identity": "Dokument tożsamości (dowód osobisty lub paszport)",
+        "income": "Zaświadczenie o dochodach (zaświadczenie z pracy, PIT, umowa o pracę)",
+        "address": "Dokument potwierdzający adres (rachunek za media, umowa najmu)"
+      },
+      "calculator": {
+        "title": "Kalkulator kredytowy",
+        "subtitle": "Otrzymaj spersonalizowaną ofertę kredytową w kilka minut",
+        "whatIs": {
+          "title": "Co to jest kalkulator kredytowy?",
+          "paragraph1": "Kalkulator kredytowy to proste narzędzie, które pomaga oszacować, ile będzie kosztować kredyt, który chcesz wziąć. Dzięki niemu możesz sprawdzić, jaką miesięczną ratę będziesz musiał spłacać oraz ile łącznie zapłacisz za pożyczone pieniądze.",
+          "paragraph2": {
+            "title": "Dla osób starszych:",
+            "content": "Jeśli nie jesteś pewien, jak działa kalkulator, nie martw się - to bardzo proste. Wystarczy, że podasz podstawowe informacje o sobie i swoich dochodach, a my pomożemy Ci znaleźć najlepszą ofertę kredytową. Możesz wypełnić formularz w swoim tempie, a jeśli będziesz potrzebować pomocy, nasz zespół jest gotowy, aby odpowiedzieć na Twoje pytania."
+          }
+        }
+      },
+      "importantInfo": {
+        "title": "Ważne informacje przed rozpoczęciem",
+        "duration": {
+          "title": "Czas trwania:",
+          "content": "Wypełnienie formularza zajmie około 3-5 minut. Po przesłaniu danych, analiza i przygotowanie oferty trwa zwykle kilka godzin."
+        },
+        "documents": {
+          "title": "Dokumenty potrzebne do weryfikacji:",
+          "content": "Po otrzymaniu wstępnej oferty, możesz zostać poproszony o przedstawienie dokumentów tożsamości (dowód osobisty lub paszport), zaświadczenia o dochodach (zaświadczenie z pracy, PIT, umowa o pracę) oraz dokumentów potwierdzających adres zamieszkania (rachunek za media, umowa najmu)."
+        },
+        "security": {
+          "title": "Bezpieczeństwo danych:",
+          "content": "Wszystkie podane informacje są bezpiecznie przechowywane i chronione zgodnie z przepisami RODO. Twoje dane nie będą udostępniane osobom trzecim bez Twojej zgody."
+        }
+      },
+      "gdprConsent": "Wyrażam zgodę na przetwarzanie moich danych osobowych zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 (RODO). Administratorem danych jest Ascendia Sp. z o.o. Dane będą przetwarzane w celu przedstawienia ofert finansowych i realizacji umów. Podanie danych jest dobrowolne, lecz niezbędne do skorzystania z usługi. Mam prawo dostępu, poprawiania, usunięcia oraz ograniczenia przetwarzania moich danych.",
+      "startCalculation": "Rozpocznij kalkulację"
+    }
   },
   "auth": {
     "email": "Adres e-mail",
@@ -95,7 +139,7 @@
   },
   "gdpr": {
     "consent": "Wyrażam zgodę na przetwarzanie moich danych osobowych zgodnie z RODO.",
-    "info": "Administratorem danych osobowych jest FastFinance Sp. z o.o. Dane osobowe przetwarzane są w celu przedstawienia ofert finansowych, realizacji umów oraz spełnienia obowiązków prawnych. Podanie danych jest dobrowolne, lecz niezbędne do skorzystania z usług. Użytkownik ma prawo dostępu do swoich danych, ich poprawiania, usunięcia oraz ograniczenia przetwarzania zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 (RODO)."
+    "info": "Administratorem danych osobowych jest Ascendia Sp. z o.o. Dane osobowe przetwarzane są w celu przedstawienia ofert finansowych, realizacji umów oraz spełnienia obowiązków prawnych. Podanie danych jest dobrowolne, lecz niezbędne do skorzystania z usług. Użytkownik ma prawo dostępu do swoich danych, ich poprawiania, usunięcia oraz ograniczenia przetwarzania zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 (RODO)."
   },
   "profile": {
     "title": "Profil",
@@ -104,13 +148,28 @@
   },
   "about": {
     "title": "O nas",
-    "description": "FastFinance to nowoczesna platforma finansowa dedykowana polskim klientom."
+    "description": "Ascendia to nowoczesna platforma finansowa dedykowana polskim klientom."
   },
   "contact": {
     "title": "Kontakt",
+    "subtitle": "Jesteśmy tutaj, aby pomóc Ci we wszystkich potrzebach finansowych",
     "email": "Email",
     "phone": "Telefon",
-    "address": "Adres"
+    "address": "Adres",
+    "workHours": "Godziny pracy",
+    "monday": "Poniedziałek",
+    "tuesday": "Wtorek",
+    "wednesday": "Środa",
+    "thursday": "Czwartek",
+    "friday": "Piątek",
+    "saturday": "Sobota",
+    "sunday": "Niedziela",
+    "closed": "Zamknięte",
+    "emergency": "W pilnych sprawach poza godzinami pracy, prosimy o skorzystanie z naszego systemu wsparcia online lub wysłanie e-maila. Zazwyczaj odpowiadamy w ciągu 24 godzin.",
+    "description1": "W Ascendia wierzymy, że wyjątkowa obsługa klienta jest fundamentem trwałych relacji. Nasz dedykowany zespół doradców finansowych i specjalistów obsługi klienta jest zaangażowany w zapewnienie Ci spersonalizowanej pomocy dostosowanej do Twoich unikalnych potrzeb. Niezależnie od tego, czy eksplorujesz opcje kredytowe, zarządzasz istniejącymi kontami, czy szukasz porady finansowej, jesteśmy tutaj, aby pomóc Ci przejść przez każdy krok Twojej finansowej podróży z pewnością i jasnością.",
+    "description2": "Nasze centrum obsługi klienta działa w wydłużonych godzinach, aby dostosować się do Twojego napiętego harmonogramu. Od poniedziałku do piątku nasi doświadczeni doradcy są dostępni od 8:00 do 20:00, zapewniając, że możesz się z nami skontaktować, gdy jest to dla Ciebie najbardziej wygodne. W soboty utrzymujemy skrócone godziny od 9:00 do 15:00, podczas gdy niedziele są zarezerwowane na odpoczynek, choć nasz system wsparcia online pozostaje dostępny 24/7 dla Twojej wygody.",
+    "description3": "Rozumiemy, że pytania i obawy finansowe nie zawsze pojawiają się w standardowych godzinach pracy. Dlatego wdrożyliśmy kompleksowy system wsparcia online, który pozwala na składanie zapytań, śledzenie wniosków kredytowych i dostęp do informacji o koncie w dowolnym momencie. Nasz inteligentny chatbot może natychmiast odpowiedzieć na powszechne pytania, podczas gdy bardziej złożone kwestie są natychmiast eskalowane do naszych specjalistów, którzy odpowiadają w ciągu 24 godzin, nawet w weekendy i święta.",
+    "description4": "Kiedy się z nami kontaktujesz, możesz oczekiwać szybkiej, profesjonalnej i empatycznej obsługi od naszego zespołu. Poświęcamy czas na dokładne zrozumienie Twojej sytuacji, zapewniając jasne wyjaśnienia i przejrzyste informacje o wszystkich naszych produktach i usługach. Twoja satysfakcja i dobrobyt finansowy są naszymi najwyższymi priorytetami, i ciągle pracujemy nad poprawą naszych usług w oparciu o Twoje opinie. Nie wahaj się skontaktować - jesteśmy tutaj, aby wspierać Cię na każdym kroku."
   }
 }
 
